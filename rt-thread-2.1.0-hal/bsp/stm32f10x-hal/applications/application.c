@@ -103,9 +103,17 @@ static void led_thread_entry(void* parameter)
 						rt_device_t _wifi_device = rt_device_find("wifi_dev"); 
 						if(RT_NULL != _wifi_device)
 						{
-							_wifi_device->open(_wifi_device,0);
+							_wifi_device->open(_wifi_device,RT_NULL);
 							_wifi_device->control(_wifi_device,WIFI_JAP,"lzt02,lzt123456");
 							_wifi_device->control(_wifi_device,WIFI_SEND,"asdfghjkl");
+							i++;
+						}
+						rt_device_t _finger_device = rt_device_find("finger_dev"); 
+						if(RT_NULL != _finger_device)
+						{
+							_finger_device->open(_finger_device,RT_NULL);
+							_finger_device->control(_finger_device,FP_REG,RT_NULL);
+							//_wifi_device->control(_wifi_device,WIFI_SEND,"asdfghjkl");
 							i++;
 						}
 						
