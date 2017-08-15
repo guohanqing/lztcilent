@@ -665,6 +665,7 @@ static rt_err_t rt_esp8266_control(rt_device_t dev, rt_uint8_t cmd, void *args)
 				    rt_device_write(wifi_device,0,ESP8266_CIPMODE_CLOSED,3);
 				    return(joap_wifi(args));
 			 case WIFI_QAP:
+				    rt_device_write(wifi_device,0,ESP8266_CIPMODE_CLOSED,3);
 				    return(!wifi_send_data_package(ESP8266_CWQAP,"OK",2,3,RT_NULL));
 			 case WIFI_SEND:
 				   return(wifi_send(args));
