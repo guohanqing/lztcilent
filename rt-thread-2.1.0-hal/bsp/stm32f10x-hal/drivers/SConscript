@@ -58,7 +58,7 @@ if GetDepend('RT_USING_SPI'):
     src += ['drv_stm32f10x_spi.c']
 # add RTC drivers.
 if GetDepend('RT_USING_RTC'):
-    src += ['rtc.c']
+    src += ['rtc.c','drv_rtc.c']
 
 # add LCD drivers.
 if GetDepend('RT_USING_RTGUI'):

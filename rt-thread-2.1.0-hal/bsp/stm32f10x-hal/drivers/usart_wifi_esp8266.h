@@ -23,17 +23,41 @@
 #define ESP8266_CS_LOW()		rt_pin_write(PB4,PIN_LOW)
 #define ESP8266_CS_HIGH()		rt_pin_write(PB4,PIN_HIGH)
 
-#define ESP8266_USARTx 		"uart3"
+
 
 //¶¨ÒåATÖ¸Áî
 
-#define WIFI_LIST   0x20
-#define WIFI_JAP    0x21
-#define WIFI_QAP    0x22
-#define WIFI_SEND   0x23
-#define WIFI_STATUS 0x24
+#define WIFI_LIST_AP_MAX 				5
+
+#define WIFI_LIST   				0x20
+#define WIFI_JAP    				0x21
+#define WIFI_QAP    				0x22
+#define WIFI_SEND_DATA   		    0x23
+#define WIFI_JAP_STATUS 		    0x24
+#define WIFI_CONNECT_SEVER 	        0x25
 
 
+//typedef int LINK_STATUS;
+
+
+//#define JAP_FAL 1
+//#define JAP_OK  2
+//#define CONNECT_SEVER_FAL  3
+//#define CONNECT_SEVER_OK  4
+
+#define CMD_SEND_FP 					0x03	//é‡‡é›†æŒ‡çº¹ä¿¡æ¯
+#define CMD_SEND_USER_PHONE_NUM 		0x04	//å‘é€æ‰‹æœºå
+#define CMD_SEND_USER_PHONE_CHECK		0x07	//å‘é€éªŒè¯ç 
+#define CMD_PAY_NUM 					0x08	//è®¾å¤‡å‘é€æ¶ˆè´¹é‡‘é¢
+#define CMD_SEND_UDID 					0x09	//å‘é€èº«ä»½è¯†åˆ«ç 
+#define CMD_SEND_TICK 					0x0A	//ÐÄÌø
+#define CMD_SYSNC_TIME          		0x0E	////æ—¶é—´æ ¡å¯¹
+#define CMD_SEND_OWNER_PHONE_NUM  		0xE8	//å‘é€ç»‘å®šæ‰‹æœºå·
+#define CMD_SEND_OWNER_PHONE_CHECK 		0xEB	//å‘é€ç»‘å®šéªŒè¯ç 
+#define CMD_UPDATA 						0x0F	//è¿œç¨‹å‡çº§
+#define CMD_DEV_WIFI                    0x10
+#define CMD_DEV_FP                      0x11
+	
 #if 1
 #define ESP8266_ATCMD "AT\x0D\x0A"               // AT²éÑ¯
 #define ESP8266_RESET "AT+RST\x0D\x0A"           // Ä£¿é¸´Î»
@@ -54,56 +78,77 @@
 
 #define ESP8266_CIPSTART "AT+CIPSTART=\"TCP\",\"192.168.2.102\",8080\x0D\x0A"      // ½¨Á¢TCP/UDPÁ¬½Ó
 #define ESP8266_CIPSTATUS "AT+CIPSTATUS\x0D\x0A"      // »ñµÃTCP/UDPÁ¬½Ó×´Ì¬
+#define ESP8266_CIP_JAP_STATUS "AT+CWJAP?\x0D\x0A"
 #define ESP8266_CIPSEND "AT+CIPSEND\x0D\x0A"      // ·¢ËÍÊý¾Ý
 
 #define ESP8266_CIPCLOSE "AT+CIPCLOSE\x0D\x0A"      // ¹Ø±ÕTCP/UDPÁ¬½Ó
 #define ESP8266_CIPMODE_CLOSED "+++"      // ¹Ø±ÕÍ¸´«
-#define ESP8266_CWLAPOPT "AT+CWLAPOPT=0,7\0x0D\x0A"                   //ÉèÖÃcwlapµÄÏÔÊ¾ÊôÐÔ 1(0)(²»)¸ù¾ÝÐÅºÅÇ¿¶ÈÅÅÐò(bit6)(bit5)(bit4)ch(bit3)mac(bit2)ÐÅºÅÇ¿¶È(bit1)ssid(bit0)¼ÓÃÜ·½Ê½
+#define ESP8266_CWLAPOPT "AT+CWLAPOPT=0,7\x0D\x0A"                   //ÉèÖÃcwlapµÄÏÔÊ¾ÊôÐÔ 1(0)(²»)¸ù¾ÝÐÅºÅÇ¿¶ÈÅÅÐò(bit6)(bit5)(bit4)ch(bit3)mac(bit2)ÐÅºÅÇ¿¶È(bit1)ssid(bit0)¼ÓÃÜ·½Ê½
 #endif
 
-typedef struct wifi_list{
+enum LINK_STATUS
+{
+	WIFI_LINK_JAP_FAILD = 1,
+	WIFI_LINK_JAP_OK,
+	WIFI_LINK_CONNECT_SEVER_FAILD,
+	WIFI_LINK_CONNECT_SEVER_OK
+};
+
+typedef struct link_ip
+{
+    char IP1[4];
+    char IP2[4];
+    char IP3[4];
+    char IP4[4];
+    char PORT[6];
+}link_ip_t;	
+	
+typedef struct sever_frame_package
+{
+		rt_uint16_t frame_head;
+		rt_uint16_t frame_data_len;
+	    rt_uint32_t  id;
+		char  SEQ;	 /* åºå·é»˜è®¤01 */      
+		char  DESC;  /* ä»…é‡‡é›†æŒ‡çº¹ä¿¡æ¯ä½¿ç”¨ï¼ˆ1-ç¬¬ä¸€æ¬¡é‡‡é›†ï¼›2-ç¬¬äºŒæ¬¡é‡‡é›†æŒ‡çº¹ä¿¡æ¯ï¼›3-ç¬¬ä¸‰æ¬¡æŒ‡çº¹é‡‡é›†ä¿¡æ¯ï¼‰é»˜è®¤0 */
+		char  CMD;   /* æ¶ˆæ¯ç±»åž‹ */
+		char        *pdata;
+	    rt_uint8_t   check;// ä»Žæ•°æ®é•¿åº¦å¼€å§‹åˆ°æ ¡éªŒç ä¹‹å‰çš„æ•°æ®çš„å¼‚æˆ–æ ¡éª/
+}sever_frame_package_t;
+
+typedef struct sever_frame_package_char
+{
+		char frame_head[2];
+		char frame_data_len[2];
+	    char  id[3];
+		char  SEQ;	 /* åºå·é»˜è®¤01 */      
+		char  DESC;  /* ä»…é‡‡é›†æŒ‡çº¹ä¿¡æ¯ä½¿ç”¨ï¼ˆ1-ç¬¬ä¸€æ¬¡é‡‡é›†ï¼›2-ç¬¬äºŒæ¬¡é‡‡é›†æŒ‡çº¹ä¿¡æ¯ï¼›3-ç¬¬ä¸‰æ¬¡æŒ‡çº¹é‡‡é›†ä¿¡æ¯ï¼‰é»˜è®¤0 */
+		char  CMD;   /* æ¶ˆæ¯ç±»åž‹ */
+		char        *pdata;
+	    rt_uint8_t   check;// ä»Žæ•°æ®é•¿åº¦å¼€å§‹åˆ°æ ¡éªŒç ä¹‹å‰çš„æ•°æ®çš„å¼‚æˆ–æ ¡éª/
+}sever_frame_package_char_t;
+
+typedef union frame_package
+{
+      sever_frame_package_char_t   frame;
+      char 					       buf[16];
+}frame_package_t;
+	
+union link_sever_ip
+{
+    link_ip_t ip;
+    char      ip_buf[22];  
+};
+
+typedef struct wifi_list
+{
 	char ecn[1];
 	char ssid[32];
-	char rssi[4];
+	int  rssi;
 }wifi_list_t;
 
+extern wifi_list_t  wifi_list_AP[WIFI_LIST_AP_MAX];
+extern wifi_list_t  connected_ap;
 
-
-#if 0
-#define ESP8266_ATCMD         0x01               // AT²éÑ¯
-#define ESP8266_RESET         0x02           // Ä£¿é¸´Î»
-
-#define ESP8266_CWMODE_STA    0x03      // Ñ¡ÔñWiFiÓ¦ÓÃÄ£Ê½  StationÄ£Ê½
-#define ESP8266_CWMODE_AP     0x04     // Ñ¡ÔñWiFiÓ¦ÓÃÄ£Ê½  APÄ£Ê½
-#define ESP8266_CWMODE_APSTA  0x05      // Ñ¡ÔñWiFiÓ¦ÓÃÄ£Ê½  Station+APÄ£Ê½
-
-#define ESP8266_CWLAP         0x06      // ÁÐ³öµ±Ç°½ÓÈëµã
-#define ESP8266_CWQAP         0x07      // ÍË³ö
-#define ESP8266_CIFSR         0x08      // »ñÈ¡±¾µØIPµØÖ·
-//#define ESP8266_CWJAP "AT+CWJAP=\"lzt02\",\"lzt123456\"\x0D\x0A"
-
-#define ESP8266_CWJAP         0x0a      // ¼ÓÈë½ÓÈëµã TP-LINK_sundm
-#define ESP8266_CIPEXITSERVER 0x0b      // ÍË³öserver
-#define ESP8266_CIPMUX        0x0c      // ÉèÖÃµ¥Á¬½Ó
-#define ESP8266_CIPMODE       0x0e      // ÉèÖÃÍ¸´«Ä£Ê½
-
-#define ESP8266_CIPSTART      0x0f     // ½¨Á¢TCP/UDPÁ¬½Ó
-#define ESP8266_CIPSTATUS     0x10     // »ñµÃTCP/UDPÁ¬½Ó×´Ì¬
-#define ESP8266_CIPSEND       0x11      // ·¢ËÍÊý¾Ý
-
-#define ESP8266_CIPCLOSE      0x12     // ¹Ø±ÕTCP/UDPÁ¬½Ó
-#define ESP8266_CIPMODE0      0x13      // ¹Ø±ÕÍ¸´«
-#define ESP8266_CWLAPOPT      0x14 
-#define ESP8266_SERIALNET     0x15      //ÉèÖÃÍ¸´«Ä£Ê½
-#endif
-
-
-//rt_bool_t wificonfig(void);// ²éÕÒwifi´®¿ÚÉè±¸²¢´ò¿ª£¬×¢²á»Øµ÷º¯Êý£¬³õÊ¼»¯´®¿Ú½ÓÊÕÊÂ¼þ
-//rt_bool_t wifiinit(void); //wifi½ÓÈëÈÈµã
-//rt_bool_t wifijap(void) ;
-//rt_bool_t wificonnect(void); //´ò¿ªÔ¶³ÌÁ¬½ÓÍøÂç
-//rt_bool_t wifisend(char * str); //ÍøÂçÊý¾Ý·¢ËÍ
-//rt_bool_t wificloseconnect(void);// ¹Ø±ÕÔ¶³ÌÁ¬½ÓÍøÂç
-//rt_bool_t wifiexit(void); // wifiÍË³öÈÈµã
+rt_err_t send_frame_package(rt_uint8_t cmd,rt_uint8_t desc,char *args,rt_size_t data_len);
 
 #endif

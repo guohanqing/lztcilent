@@ -5,7 +5,12 @@ extern struct ft5216_data ft5216_statue;
 int  GUI_TOUCH_GetState(GUI_PID_STATE * pState)
 {
 	//uint16_t x,y;
-	//ft5216_CTP_GetXY(CTP_I2C_ADDRESS,&x,&y);
+	//
+	/*if(FT5216_PUT_DOWN == ft5216_statue.active)
+	{
+			//ft5216_CTP_G tXY(CTP_I2C_ADDRESS,&x,&y);//
+		HAL_GPIO_EXTI_Callback(GPIO_PIN_4);
+	}*/
 	//HAL_GPIO_EXTI_Callback(GPIO_PIN_4);
 	pState->x = (int)ft5216_statue.X_phys;
 	pState->y = (int)ft5216_statue.Y_phys;
@@ -14,8 +19,18 @@ int  GUI_TOUCH_GetState(GUI_PID_STATE * pState)
 	else
 		pState->Pressed = 0;
 	//pState->Layer = 0;
+	return 0;
 }	
 
+
+void GUI_TOUCH_StoreStateEx (const GUI_PID_STATE * pState)
+{
+
+}
+void GUI_TOUCH_StoreUnstable(int x, int y)
+{
+}
+#if 0
 void GUI_TOUCH_GetUnstable  (int * px, int * py)  /* for diagnostics only */
 {
 	//uint16_t x,y;
@@ -60,6 +75,7 @@ yvalue = (int32_t)ft5216_statue.Y_phys;
 return yvalue;
  
 }
+#endif
 /*void GUI_TOUCH_SetLayer     (int Layer);
 void GUI_TOUCH_StoreState   (int x, int y);
 void GUI_TOUCH_StoreStateEx (const GUI_PID_STATE * pState);

@@ -40,7 +40,8 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern UART_HandleTypeDef huart1;
+//extern UART_HandleTypeDef huart1;
+extern RTC_HandleTypeDef hrtc;
 //extern uint8_t ft5216_rcv[];
 
 
@@ -85,6 +86,11 @@ void EXTI9_5_IRQHandler(void)
   /* USER CODE BEGIN EXTI4_IRQn 1 */
 
   /* USER CODE END EXTI4_IRQn 1 */
+}
+
+void RTC_IRQHandler(void)
+{
+    HAL_RTCEx_RTCIRQHandler(&hrtc);
 }
 /**
 * @brief This function handles Memory management fault.

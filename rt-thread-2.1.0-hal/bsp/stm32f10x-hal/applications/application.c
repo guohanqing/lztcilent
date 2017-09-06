@@ -50,19 +50,22 @@
 #include "spi_flash_w25qxx.h"
 #include "drv_uart_finger.h"
 #include "usart_wifi_esp8266.h"
+#include "drv_power.h"
+#include "GUI.h"
+#include "app.h"
 //#include "bsp_EEPROM.h"
 
 ALIGN(RT_ALIGN_SIZE)
-static rt_uint8_t led_stack[4096];
+static rt_uint8_t led_stack[1024*2];
 static struct rt_thread led_thread;
-
+//extern GUI_CONST_STORAGE GUI_BITMAP bmlogo;
 extern int rt_hw_lcd_init(void);
 //extern uint8_t ft5216_rcv[];
 uint16_t lcdid;
 uint16_t ft5216id;
 static void led_thread_entry(void* parameter)
 {
-	uint8_t i = 1;
+	//uint8_t i = 1;
     //unsigned int count=0;
 	
     rt_led_hw_init();
@@ -76,15 +79,19 @@ static void led_thread_entry(void* parameter)
     //rt_pin_mode(PC15, PIN_MODE_OUTPUT);
     //rt_pin_mode(PB3, PIN_MODE_OUTPUT);
     //rt_pin_mode(PB4, PIN_MODE_OUTPUT);
-#if 1	
+    //hwadc();
+#if 0
 	#ifdef RT_USING_LCD_ILI9341
 	rt_hw_lcd_init();
 	lcdid = ili9341_read_id();
 	//if(0x9341 == lcdid)
 	//rt_hw_lcd_init();
 	ili9341_screen_clear(RED);
-	ft5216id = ft5216_ReadID();
+	//ili9341_DrawBitmap(0,0 ,bmwelcome.pData);
+	//ft5216id = ft5216_ReadID();
 	//CTP_IO_Read(0,ft5216_rcv,8); 
+	//GUI_Init();
+	//GUI_DrawBitmap(&bmlogo,70,30);
 	//LCD_Clear();
 	 //ili9341_DrawLine(0,8,100,108,GREEN);
 	//LCD_Fill(0,0,100,50,RED);
@@ -92,33 +99,53 @@ static void led_thread_entry(void* parameter)
 	
 #endif
 	#endif	
-    
+
     while (1)
-    {
+    { 
+        
+        #if 0
+        //WIFI_LINK_CONNECT_SEVER_OK != wifi_link_status
+       // send_frame_package(CMD_SEND_TICK,1,"22");
+			//char buf1[6] = {0};
+			//char buf1[6] = {0};
+			//char buf1[6] = {0};
 		//ili9341_screen_clear(RED);
 				{ 
 					
-					if(1 == i)
-					{
-						rt_device_t _wifi_device = rt_device_find("wifi_dev"); 
-						if(RT_NULL != _wifi_device)
-						{
-							_wifi_device->open(_wifi_device,RT_NULL);
-							_wifi_device->control(_wifi_device,WIFI_JAP,"lzt02,lzt123456");
-							_wifi_device->control(_wifi_device,WIFI_SEND,"asdfghjkl");
-							i++;
-						}
-						rt_device_t _finger_device = rt_device_find("finger_dev"); 
-						if(RT_NULL != _finger_device)
-						{
-							_finger_device->open(_finger_device,RT_NULL);
-							_finger_device->control(_finger_device,FP_REG,RT_NULL);
-							//_wifi_device->control(_wifi_device,WIFI_SEND,"asdfghjkl");
-							i++;
-						}
-						
-				  }
+                    if(1 == i)
+                        {
+                            rt_device_t _wifi_device = rt_device_find("wifi_dev"); 
+                            if(RT_NULL != _wifi_device)
+                            {
+                                union link_sever_ip ipx;
+                                memset(ipx.ip_buf,0,sizeof(ipx.ip_buf));
+                                strcpy(ipx.ip.IP1,"192");
+                                strcpy(ipx.ip.IP2,"168");
+                                strcpy(ipx.ip.IP3,"2");
+                                strcpy(ipx.ip.IP4,"102");
+                                strcpy(ipx.ip.PORT,"8080");
+                                _wifi_device->open(_wifi_device,0);
+                                _wifi_device->control(_wifi_device,WIFI_JAP,"lzt02,lzt123456");
+                                _wifi_device->control(_wifi_device,WIFI_JAP_STATUS,RT_NULL);
+                                _wifi_device->control(_wifi_device,WIFI_CONNECT_SEVER,(void *)ipx.ip_buf);
+                                //_wifi_device->control(_wifi_device,WIFI_CONNECT_SEVER,(void *)ipx.ip_buf);
+                                
+                                i++;
+                            }
+                             rt_device_t fp_device = rt_device_find("finger_dev"); 
+                            if(RT_NULL != fp_device)
+                            {
+       
+                                fp_device->control(fp_device,FP_REG,RT_NULL);
+                               // _wifi_device->control(_wifi_device,WIFI_CONNECT_SEVER,(void *)ipx.ip_buf);
+                                //_wifi_device->control(_wifi_device,WIFI_CONNECT_SEVER,(void *)ipx.ip_buf);
+                                
+                                i++;
+                            }
+                      }
+                        
 				}
+                #endif
         /* led1 on */
 #ifndef RT_USING_FINSH
         rt_kprintf("led on, count : %d\r\n",count);
@@ -142,7 +169,51 @@ static void led_thread_entry(void* parameter)
         
         //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);
         rt_led_off();
-        rt_thread_delay( RT_TICK_PER_SECOND*10 );       
+        rt_thread_delay( RT_TICK_PER_SECOND*2 );       
+    }
+}
+
+
+void start_image_thread_entry(void* parameter)
+{
+	
+	#ifdef RT_USING_PIN    
+	   stm32_hw_pin_init();
+		#if 1
+		rt_pin_mode(SYS_POWER_PIN,PIN_MODE_OUTPUT); 
+		rt_pin_mode(DEVICE_POWER_PIN,PIN_MODE_OUTPUT);
+		rt_pin_mode(SWITCH_POWER_PIN_IN,PIN_MODE_INPUT);
+        rt_pin_mode(BEEP_PIN,PIN_MODE_OUTPUT);
+		DEVICE_POWER_ON;
+        SYS_POWER_ON;
+        device_status = SYS_STATUS_ON;
+        BEEP_ON;
+        rt_thread_delay( RT_TICK_PER_SECOND/2);
+        BEEP_OFF;
+		#endif
+	#endif
+    
+	rt_hw_lcd_init();
+    //rt_thread_delay( RT_TICK_PER_SECOND/10);
+    GUI_Init();
+    GUI_SetBkColor(GUI_WHITE);
+    GUI_Clear();
+    GUI_UC_SetEncodeUTF8();
+    GUI_SetFont(&GUI_Font_kai24);
+    GUI_SetColor(GUI_BLUE);
+    GUI_DispStringAt("恋指时代",72,180);
+	GUI_SetFont(&GUI_Font_song16);
+    GUI_SetColor(GUI_BLACK);
+	GUI_DispStringAt("河南恋指团科技有限公司",38,230);
+    GUI_SetFont(GUI_FONT_20_ASCII);
+    GUI_SetColor(GUI_BLACK);
+    GUI_DispStringAt("www.51lzt.com",60,260);
+    GUI_DrawBitmap(&bmwelcome,0,0); 
+    while (1)
+    { 
+        rt_thread_delay( RT_TICK_PER_SECOND*3);
+       
+        return;
     }
 }
 
@@ -164,26 +235,21 @@ void cali_store(struct calibration_data *data)
 #endif /* RT_USING_RTGUI */
 
 void rt_init_thread_entry(void* parameter)
-{
-#ifdef RT_USING_SPI
-	//rt_platform_init();
-#endif
+{ 
+
 #ifdef RT_USING_COMPONENTS_INIT
     /* initialization RT-Thread Components */
     rt_components_init();
 #endif
-	
-#ifdef RT_USING_PIN    
-    
-  	stm32_hw_pin_init();  
-    
-#endif /* RT_USING_PIN */ 
+
+//#endif /* RT_USING_PIN */ 
+
 	
  #ifdef RT_USING_SPI_FLASH
 	  w25qxx_init("sd0", "spiflash");
 	
 #endif  
-  
+    
     /* Filesystem Initialization */
 #if defined(RT_USING_DFS) && defined(RT_USING_DFS_ELMFAT)
 	/* initialize the device file system */
@@ -193,19 +259,19 @@ void rt_init_thread_entry(void* parameter)
 		elm_init();
 		
     /* mount sd card fat partition 1 as root directory */
+    //dfs_mkfs("elm","sd0");
     if (dfs_mount("sd0", "/", "elm", 0, 0) == 0)
     {
         rt_kprintf("File System initialized!\n");
     }
     else
-		{
-        rt_kprintf("File System initialzation failed!\n");
-		    
-		}
-		//dfs_mkfs("elm","sd0");
+	{
+		rt_kprintf("File System initialzation failed!\n");
+	}
+		
 #endif  /* RT_USING_DFS */
-	
-
+	//emwin_system_init();
+    power_switch_init();
 
 #ifdef RT_USING_RTGUI
     {
@@ -241,10 +307,8 @@ void rt_init_thread_entry(void* parameter)
 int rt_application_init(void)
 {
     rt_thread_t init_thread;
-
+    rt_thread_t start_thread;
     rt_err_t result;
-    
-     
     /* init led thread */
     result = rt_thread_init(&led_thread,
                             "led",
@@ -257,6 +321,12 @@ int rt_application_init(void)
     if (result == RT_EOK)
     {
         rt_thread_startup(&led_thread);
+    } 
+    start_thread =  rt_thread_create("begin_image",
+                             start_image_thread_entry,RT_NULL,1536, 8, 21);
+    if (result == RT_EOK)
+    {
+        rt_thread_startup(start_thread);
     }
 #ifdef RT_USING_HWADC    
     /* init lwc process thread */
@@ -272,49 +342,7 @@ int rt_application_init(void)
     {
         rt_thread_startup(&lwc_adc_thread);
     }*/  
-#endif
-    
-#ifdef RT_USING_LIGHT_WAVE_CURER   
-    /* init lwc process thread */
-    result = rt_thread_init(&lwc_button_thread,
-                            "lwcbutton",
-                            lwc_button_thread_entry,
-                            RT_NULL,
-                            (rt_uint8_t*)&lwc_button_stack[0],
-                            sizeof(lwc_button_stack),
-                            19,
-                            5);
-    if (result == RT_EOK)
-    {
-        rt_thread_startup(&lwc_button_thread);
-    }   
-    /* init lwc display thread */
-    result = rt_thread_init(&lwc_display_thread,
-                            "lwcdisplay",
-                            lwc_display_thread_entry,
-                            RT_NULL,
-                            (rt_uint8_t*)&lwc_display_stack[0],
-                            sizeof(lwc_display_stack),
-                            22,
-                            5);
-    if (result == RT_EOK)
-    {
-        rt_thread_startup(&lwc_display_thread);
-    } 
-    /* init lwc control thread */
-    result = rt_thread_init(&lwc_output_thread,
-                            "lwcoutput",
-                            lwc_output_thread_entry,
-                            RT_NULL,
-                            (rt_uint8_t*)&lwc_output_stack[0],
-                            sizeof(lwc_output_stack),
-                            21,
-                            5);
-    if (result == RT_EOK)
-    {
-        rt_thread_startup(&lwc_output_thread);
-    }  
-#endif /* RT_USING_LIGHT_WAVE_CURER */    
+#endif   
 
 #if (RT_THREAD_PRIORITY_MAX == 32)
     init_thread = rt_thread_create("init",

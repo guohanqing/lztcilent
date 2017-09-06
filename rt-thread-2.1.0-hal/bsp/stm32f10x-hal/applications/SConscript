@@ -17,5 +17,4 @@ if GetDepend('RT_USING_CAN'):
 CPPPATH = [cwd, str(Dir('#'))]
 
 group = DefineGroup('Applications', src, depend = [''], CPPPATH = CPPPATH)
-
 Return('group')

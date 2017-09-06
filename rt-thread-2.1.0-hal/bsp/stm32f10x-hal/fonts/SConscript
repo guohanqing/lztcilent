@@ -1,0 +1,18 @@
+Import('RTT_ROOT')
+Import('rtconfig')
+from building import *
+
+cwd = os.path.join(str(Dir('#')), 'fonts')
+
+if GetDepend('RT_USING_LZT_APP'):
+    src = Split("""
+	_song16.c
+	_kai24.c
+	""")
+
+
+CPPPATH = [cwd, str(Dir('#'))]
+
+group = DefineGroup('fonts', src, depend = ['RT_USING_LZT_APP'], CPPPATH = CPPPATH)
+
+Return('group')

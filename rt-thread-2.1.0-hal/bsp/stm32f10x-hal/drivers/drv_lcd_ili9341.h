@@ -248,7 +248,7 @@ uint16_t ili9341_get_pixel(uint16_t x, uint16_t y);
 
 uint16_t ili9341_get_lcd_pixel_width(void);
 uint16_t ili9341_get_lcd_pixel_height(void);
-
+void ili9341_DrawBitmap(uint16_t Xpos, uint16_t Ypos,const uint8_t *pbmp);
 //int 	rt_hw_lcd_init(void);
 void 	ili9341_screen_clear(uint16_t color);
   

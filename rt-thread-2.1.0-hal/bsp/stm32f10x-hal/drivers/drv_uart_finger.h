@@ -34,22 +34,23 @@
 #include "board.h"
 
 
-	#define FINGER_GPIO_CLK_ENABLE() __HAL_RCC_GPIOC_CLK_ENABLE()
+#define FINGER_GPIO_CLK_ENABLE() __HAL_RCC_GPIOC_CLK_ENABLE()
 
 
-  #define FP_POWER_PIN    GPIO_PIN_9
-	#define FP_CRTL_PIN  	  GPIO_PIN_8
-	#define FP_OUT_PIN  	  GPIO_PIN_7
-	#define FP_POWER_PORT   GPIOC
-	#define FP_CRTL_PORT  	GPIOC
-	#define FP_OUT_PORT  	  GPIOC
+#define FP_POWER_PIN        GPIO_PIN_3
+#define FP_CRTL_PIN  	    GPIO_PIN_2
+#define FP_OUT_PIN  	    GPIO_PIN_1
+#define FP_POWER_PORT       GPIOC
+#define FP_CRTL_PORT  	    GPIOC
+#define FP_OUT_PORT  	    GPIOC
 
-	#define FP_CRTL_ON()  HAL_GPIO_WritePin(FP_CRTL_PORT,FP_CRTL_PIN,GPIO_PIN_SET)
-	#define FP_CRTL_OFF() HAL_GPIO_WritePin(FP_CRTL_PORT,FP_CRTL_PIN,GPIO_PIN_RESET)
+#define FP_CRTL_ON()  HAL_GPIO_WritePin(FP_CRTL_PORT,FP_CRTL_PIN,GPIO_PIN_SET)
+#define FP_CRTL_OFF() HAL_GPIO_WritePin(FP_CRTL_PORT,FP_CRTL_PIN,GPIO_PIN_RESET)
 
-	#define FP_POWER_ON()  HAL_GPIO_WritePin(FP_POWER_PORT,FP_POWER_PIN,GPIO_PIN_SET)
-	#define FP_POWER_OFF() HAL_GPIO_WritePin(FP_POWER_PORT,FP_POWER_PIN,GPIO_PIN_RESET)
+#define FP_POWER_ON()  HAL_GPIO_WritePin(FP_POWER_PORT,FP_POWER_PIN,GPIO_PIN_SET)
+#define FP_POWER_OFF() HAL_GPIO_WritePin(FP_POWER_PORT,FP_POWER_PIN,GPIO_PIN_RESET)
 
+#define  FP_OUT_PIN_READ HAL_GPIO_ReadPin(FP_POWER_PORT,FP_POWER_PIN)
 #define FINGER_RECIVE_MAX 500
 
 #define REV_DATA      0x01
@@ -85,7 +86,7 @@
 #define FP_CMD_GET_UNUSED_USER     	0x0D //指纹一对多比对
 #define FP_CMD_SET_BAUD     				0x21 //设定波特率
 
-#define FP_CMD_GET_FP						    0x23 //获取指纹特征值特征值长度494
+#define FP_CMD_GET_FP						0x23 //获取指纹特征值特征值长度494
 
 #define FP_CMD_GET_FP_IMAGE					0x24 //获取指纹图像
 #define FP_CMD_GET_FP_BY_NUM				0x31 //获取指纹特征值特征值长度494

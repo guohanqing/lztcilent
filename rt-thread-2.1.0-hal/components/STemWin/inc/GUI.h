@@ -1832,6 +1832,12 @@ extern GUI_CONST_STORAGE GUI_FONT GUI_FontD80;
 extern GUI_CONST_STORAGE GUI_FONT GUI_FontComic18B_ASCII, GUI_FontComic18B_1;
 extern GUI_CONST_STORAGE GUI_FONT GUI_FontComic24B_ASCII, GUI_FontComic24B_1;
 
+
+// Comic fonts
+//
+extern GUI_CONST_STORAGE GUI_FONT GUI_FontComic18B_ASCII, GUI_FontComic18B_1;
+extern GUI_CONST_STORAGE GUI_FONT GUI_FontComic24B_ASCII, GUI_FontComic24B_1;
+
 /*********************************************************************
 *
 *       Macros to be used

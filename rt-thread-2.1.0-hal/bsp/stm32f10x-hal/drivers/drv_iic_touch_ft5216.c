@@ -1,7 +1,7 @@
 #include "stm32f1xx_hal.h"
 #include <rtthread.h>
 #include <rtdevice.h>
-
+#include "GUI.h"
 /**
   ******************************************************************************
   * @file    ft5216.c
@@ -388,8 +388,8 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *i2c_handler)
     HAL_GPIO_Init(CTP_I2Cx_SCL_SDA_GPIO_PORT, &gpio_init_structure);
 
     /*** Configure the I2C peripheral ***/
-		 __HAL_AFIO_REMAP_I2C1_ENABLE();
-		 CTP_I2Cx_SCL_SDA_GPIO_CLK_ENABLE();
+    __HAL_AFIO_REMAP_I2C1_ENABLE();
+    CTP_I2Cx_SCL_SDA_GPIO_CLK_ENABLE();
     /* Enable I2C clock */
     CTP_I2Cx_CLK_ENABLE();
     /* Force the I2C peripheral clock reset */
@@ -406,7 +406,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *i2c_handler)
     /* Enable and set I2Cx Interrupt to a lower priority */
     HAL_NVIC_SetPriority(CTP_I2Cx_ER_IRQn, 0x0F, 0);
     HAL_NVIC_EnableIRQ(CTP_I2Cx_ER_IRQn);
-		CTP_I2Cx_CLK_ENABLE();
+    CTP_I2Cx_CLK_ENABLE();
 		#endif
 		#endif
 		
@@ -430,7 +430,7 @@ void I2Cx_Init(I2C_HandleTypeDef *i2c_handler)
 	#else
     i2c_handler->Instance = CTP_I2Cx;
     i2c_handler->Init.ClockSpeed = 100000;
-		i2c_handler->Init.DutyCycle = I2C_DUTYCYCLE_2;
+    i2c_handler->Init.DutyCycle = I2C_DUTYCYCLE_2;
     i2c_handler->Init.OwnAddress1      = 0;
     i2c_handler->Init.AddressingMode   = I2C_ADDRESSINGMODE_7BIT;
     i2c_handler->Init.DualAddressMode  = I2C_DUALADDRESS_DISABLE;
@@ -462,30 +462,30 @@ void I2C_busy_ERROR_Handing(I2C_HandleTypeDef *i2c_handler)
     PB8    ------> I2C1_SCL
     PB9     ------> I2C1_SDA 
     */
-		__HAL_RCC_I2C1_CLK_ENABLE();
+    __HAL_RCC_I2C1_CLK_ENABLE();
     GPIO_InitStruct.Pin = CTP_I2Cx_SCL_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     HAL_GPIO_Init(CTP_I2Cx_SCL_SDA_GPIO_PORT, &GPIO_InitStruct);
 	
-		GPIO_InitStruct.Pin = CTP_I2Cx_SDA_PIN;
+    GPIO_InitStruct.Pin = CTP_I2Cx_SDA_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     HAL_GPIO_Init(CTP_I2Cx_SCL_SDA_GPIO_PORT, &GPIO_InitStruct);
-		HAL_GPIO_WritePin(CTP_I2Cx_SCL_SDA_GPIO_PORT,CTP_I2Cx_SCL_PIN,GPIO_PIN_SET);
-		HAL_GPIO_WritePin(CTP_I2Cx_SCL_SDA_GPIO_PORT,CTP_I2Cx_SDA_PIN,GPIO_PIN_SET);
+    HAL_GPIO_WritePin(CTP_I2Cx_SCL_SDA_GPIO_PORT,CTP_I2Cx_SCL_PIN,GPIO_PIN_SET);
+    HAL_GPIO_WritePin(CTP_I2Cx_SCL_SDA_GPIO_PORT,CTP_I2Cx_SDA_PIN,GPIO_PIN_SET);
 		/*delay_us(10);*/
-		SET_BIT(i2c_handler->Instance->CR1, I2C_CR1_SWRST);
-		 i2c_handler->Instance->CR1= 0;
+    SET_BIT(i2c_handler->Instance->CR1, I2C_CR1_SWRST);
+    i2c_handler->Instance->CR1= 0;
 		 
-		HAL_GPIO_WritePin(CTP_I2Cx_SCL_SDA_GPIO_PORT,CTP_I2Cx_SDA_PIN,GPIO_PIN_SET);
-		GPIO_InitStruct.Pin = CTP_I2Cx_SCL_PIN;
+    HAL_GPIO_WritePin(CTP_I2Cx_SCL_SDA_GPIO_PORT,CTP_I2Cx_SDA_PIN,GPIO_PIN_SET);
+    GPIO_InitStruct.Pin = CTP_I2Cx_SCL_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     HAL_GPIO_Init(CTP_I2Cx_SCL_SDA_GPIO_PORT, &GPIO_InitStruct);
 		
 	
-		GPIO_InitStruct.Pin = CTP_I2Cx_SDA_PIN;
+    GPIO_InitStruct.Pin = CTP_I2Cx_SDA_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     HAL_GPIO_Init(CTP_I2Cx_SCL_SDA_GPIO_PORT, &GPIO_InitStruct);
@@ -605,7 +605,7 @@ void CTP_IO_Init(void)
 
 	/* EXTI interrupt init*/
 	HAL_NVIC_SetPriority(EXTI4_IRQn, 1, 0);
-  HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+    HAL_NVIC_EnableIRQ(EXTI4_IRQn);
   #ifdef FT5216_USING_SOFT_I2C
 	#else
 	I2Cx_Init(&hI2cCtpHandler);
@@ -1124,8 +1124,8 @@ void ft5216_I2C_InitializeIfRequired(void)
   */
 uint32_t ft5216_CTP_Configure(uint16_t DeviceAddr)
 {
-	uint8_t temp;
-  uint32_t status = FT5216_STATUS_OK;
+        uint8_t temp;
+        uint32_t status = FT5216_STATUS_OK;
 		CTP_I2Cx_RST_OFF;
 		rt_thread_delay( RT_TICK_PER_SECOND/20 );
 		CTP_I2Cx_RST_ON;
@@ -1133,7 +1133,7 @@ uint32_t ft5216_CTP_Configure(uint16_t DeviceAddr)
 		//CTP_I2Cx_SDA_ON;
 		//CTP_I2Cx_SCL_ON;
 		//rt_thread_delay( RT_TICK_PER_SECOND/100 );
-	  temp=1;
+        temp=1;
 		CTP_IO_Write(FT5216_GMODE_REG,&temp,1);	//进入正常操作模式 
 		temp=70;								//触摸有效值，22，越小越灵敏	
 		CTP_IO_Write(FT5216_TH_GROUP_REG,&temp,1);	//设置触摸有效值
@@ -1171,29 +1171,12 @@ void ft5216_timer_out_callback(void* parameter)
 	}
 }
 */
+GUI_PID_STATE State;
+extern void EXTI1_INTERPUT_cb(void);
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	if( GPIO_PIN_4 == GPIO_Pin)
-	{
-		/*if(0 == ft5216_int_flag)
-		{
-			ft5216_int_flag = 1;
-			ft5216_timer = rt_timer_create("ft5216timer",
-                           ft5216_timer_out_callback,
-                           RT_NULL,
-                           RT_TICK_PER_SECOND/5,
-                           RT_TIMER_FLAG_PERIODIC);
-			if(ft5216_timer != RT_NULL)
-				rt_timer_start(ft5216_timer);
-		}
-		else
-			ft5216_int_flag += 1;*/
-		
-		/*CTP_IO_Read(0,temp_rcvbuf+i,8);
-		i += 8;
-		if(i > 512)
-			i = 0;*/
-		
+	{		
 		uint8_t ft5216_rcv[8] = {0};
 		CTP_IO_Read(0,ft5216_rcv,8);
 		
@@ -1203,7 +1186,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 			ft5216_statue.active = FT5216_PUT_DOWN;
 		ft5216_statue.X_phys =((uint16_t)(ft5216_rcv[3]&0x3f)<<8) + (uint16_t)ft5216_rcv[4];
 		ft5216_statue.Y_phys =((uint16_t)(ft5216_rcv[5]&0x3f)<<8) + (uint16_t)ft5216_rcv[6];
+		GUI_TOUCH_GetState(&State);
+		GUI_PID_StoreState(&State);
 	}
+    if( GPIO_PIN_1 == GPIO_Pin)
+    {
+        EXTI1_INTERPUT_cb();
+    }
 }
 
 
@@ -1213,7 +1202,7 @@ int ft5216_init(void)
 {
 	ft5216_I2C_InitializeIfRequired();
 	ft5216_CTP_Configure(0);
-	HAL_GPIO_EXTI_Callback(GPIO_PIN_4);
+	//HAL_GPIO_EXTI_Callback(GPIO_PIN_4);
 	return 0;
 }	
 

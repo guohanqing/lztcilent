@@ -223,6 +223,7 @@ void LCD_X_Config(void) {
   //
   Config.Orientation = 0;//GUI_SWAP_XY | GUI_MIRROR_Y;
   GUIDRV_FlexColor_Config(pDevice, &Config);
+	//GUI_TOUCH_Calibrate(GUI_COORD_X,);
   //
   // Set controller and operation mode
   //

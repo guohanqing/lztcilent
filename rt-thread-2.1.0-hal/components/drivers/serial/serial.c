@@ -35,7 +35,7 @@
 #include <rthw.h>
 #include <rtthread.h>
 #include <rtdevice.h>
-
+extern struct rt_serial_device serial3;
 /*
  * Serial poll routines 
  */
@@ -73,11 +73,13 @@ rt_inline int _serial_poll_tx(struct rt_serial_device *serial, const rt_uint8_t 
          * to be polite with serial console add a line feed
          * to the carriage return character
          */
-        if (*data == '\n' && (serial->parent.open_flag & RT_DEVICE_FLAG_STREAM))
+        if(rt_strstr(serial->parent.parent.name,RT_CONSOLE_DEVICE_NAME))
         {
-            serial->ops->putc(serial, '\r');
+            if (*data == '\n' && (serial->parent.open_flag & RT_DEVICE_FLAG_STREAM))
+            {
+                serial->ops->putc(serial, '\r');
+            }
         }
-    
         serial->ops->putc(serial, *data);
     
         ++ data;

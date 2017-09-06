@@ -44,6 +44,7 @@
 //#include "drv_spi_lcd.h"
 #include "drv_lcd_ili9341.h"
 #include "drv_fsmc_lcd.h"
+#include "app.h"
 //#include "bsp_lcd.h"
 /** @addtogroup ILI9341
   * @brief This file provides a set of functions needed to drive the 
@@ -214,126 +215,7 @@ void ili9341_init(void)
   /* Initialize ILI9341 low level bus layer ----------------------------------*/
   //LCD_IO_Init();
   ili9341_hw_init();
-#if 0
-	
-  /* Configure LCD */
-  ili9341_write_cmd(0xCA);
-  ili9341_write_data(0xC3);
-  ili9341_write_data(0x08);
-  ili9341_write_data(0x50);
-	
-  ili9341_write_cmd(LCD_POWERB);
-  ili9341_write_data(0x00);
-  ili9341_write_data(0xC1);
-  ili9341_write_data(0x30);
-  ili9341_write_cmd(LCD_POWER_SEQ);
-  ili9341_write_data(0x64);
-  ili9341_write_data(0x03);
-  ili9341_write_data(0x12);
-  ili9341_write_data(0x81);
-  ili9341_write_cmd(LCD_DTCA);
-  ili9341_write_data(0x85);
-  ili9341_write_data(0x00);
-  ili9341_write_data(0x78);
-  ili9341_write_cmd(LCD_POWERA);
-  ili9341_write_data(0x39);
-  ili9341_write_data(0x2C);
-  ili9341_write_data(0x00);
-  ili9341_write_data(0x34);
-  ili9341_write_data(0x02);
-  ili9341_write_cmd(LCD_PRC);
-  ili9341_write_data(0x20);
-  ili9341_write_cmd(LCD_DTCB);
-  ili9341_write_data(0x00);
-  ili9341_write_data(0x00);
-  
-  ili9341_write_cmd(LCD_POWER1);
-  ili9341_write_data(0x10);
-  ili9341_write_cmd(LCD_POWER2);
-  ili9341_write_data(0x10);
-  ili9341_write_cmd(LCD_VCOM1);
-  ili9341_write_data(0x45);
-  ili9341_write_data(0x15);
-  ili9341_write_cmd(LCD_VCOM2);
-  ili9341_write_data(0x90);
-  ili9341_write_cmd(LCD_MACTL);
-  ili9341_write_data(0xC8);
-
-  ili9341_write_cmd(LCD_RGB_INTERFACE);
-  ili9341_write_data(0xC2);
-  ili9341_write_cmd(LCD_DFC);
-  ili9341_write_data(0x0A);
-  ili9341_write_data(0xA7);
-  ili9341_write_data(0x27);
-  ili9341_write_data(0x04);
-  
-  /* Colomn address set */
-  ili9341_write_cmd(LCD_COLUMN_ADDR_SET);
-  ili9341_write_data(0x00);
-  ili9341_write_data(0x00);
-  ili9341_write_data(0x00);
-  ili9341_write_data(0xEF);
-  /* Page address set */
-  ili9341_write_cmd(LCD_PAGE_ADDR_SET);
-  ili9341_write_data(0x00);
-  ili9341_write_data(0x00);
-  ili9341_write_data(0x01);
-  ili9341_write_data(0x3F);
-  ili9341_write_cmd(LCD_INTERFACE);
-  ili9341_write_data(0x01);
-  ili9341_write_data(0x00);
-  ili9341_write_data(0x06);
-  
-  ili9341_write_cmd(LCD_WR_MEM_CMD);
-  hw_lcd_delay(10);//10ms
-  
-  ili9341_write_cmd(LCD_FRMCTR1);
-  ili9341_write_data(0x00);
-  ili9341_write_data(0x1B);
-  ili9341_write_cmd(LCD_DFC);// Display Function Control 
-  ili9341_write_data(0x0A);
-  ili9341_write_data(0xA2);
-  
-  ili9341_write_cmd(LCD_3GAMMA_EN);
-  ili9341_write_data(0x00);
-  ili9341_write_cmd(LCD_GAMMA_SET);//Gamma curve selected 
-  ili9341_write_data(0x01);
-  
-  ili9341_write_cmd(LCD_PGAMMA);
-  ili9341_write_data(0x0F);
-  ili9341_write_data(0x29);
-  ili9341_write_data(0x24);
-  ili9341_write_data(0x0C);
-  ili9341_write_data(0x0E);
-  ili9341_write_data(0x09);
-  ili9341_write_data(0x4E);
-  ili9341_write_data(0x78);
-  ili9341_write_data(0x3C);
-  ili9341_write_data(0x09);
-  ili9341_write_data(0x13);
-  ili9341_write_data(0x05);
-  ili9341_write_data(0x17);
-  ili9341_write_data(0x11);
-  ili9341_write_data(0x00);
-  ili9341_write_cmd(LCD_NGAMMA);
-  ili9341_write_data(0x00);
-  ili9341_write_data(0x16);
-  ili9341_write_data(0x1B);
-  ili9341_write_data(0x04);
-  ili9341_write_data(0x11);
-  ili9341_write_data(0x07);
-  ili9341_write_data(0x31);
-  ili9341_write_data(0x33);
-  ili9341_write_data(0x42);
-  ili9341_write_data(0x05);
-  ili9341_write_data(0x0C);
-  ili9341_write_data(0x0A);
-  ili9341_write_data(0x28);
-  ili9341_write_data(0x2F);
-  ili9341_write_data(0x0F);
- #endif
-  
-   LCD_WRITE_CMD(0xCF);  
+  LCD_WRITE_CMD(0xCF);  
 	LCD_WRITE_DATA(0x00); 
 	LCD_WRITE_DATA(0xC1); 
 	LCD_WRITE_DATA(0X30); 
@@ -576,7 +458,7 @@ uint16_t ili9341_get_lcd_pixel_height(void)
   * @param  BmpAddress: Bmp picture address in the internal Flash.
   * @retval None
   */
-void ili9341_DrawBitmap(uint16_t Xpos, uint16_t Ypos, uint8_t *pbmp)
+void ili9341_DrawBitmap(uint16_t Xpos, uint16_t Ypos, const uint8_t *pbmp)
 {
   uint32_t index = 0, size = 0;
   
@@ -702,11 +584,13 @@ static rt_err_t lcd_init(rt_device_t dev)
 
 static rt_err_t lcd_open(rt_device_t dev, rt_uint16_t oflag)
 {
+    rt_lcd_bl_on();
     return RT_EOK;
 }
 
 static rt_err_t lcd_close(rt_device_t dev)
 {
+    rt_lcd_bl_off();
     return RT_EOK;
 }
 

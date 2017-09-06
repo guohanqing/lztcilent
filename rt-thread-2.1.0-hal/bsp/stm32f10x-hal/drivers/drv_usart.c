@@ -148,7 +148,12 @@ static int drv_getc(struct rt_serial_device *serial)
 				{
 					if(USART2 == uart->UartHandle.Instance)
 					{
-						temp_uart2_recv[temp_uart_i++] = ch;
+                        
+                        temp_uart2_recv[temp_uart_i++] = ch;
+                        if(0xf5 != temp_uart2_recv[0])
+                            temp_uart_i = 0;
+                        else if(0x23 != temp_uart2_recv[1])
+                            temp_uart_i = 1;
 						if(507 < temp_uart_i)
 						{
 							temp_uart_i = 0;

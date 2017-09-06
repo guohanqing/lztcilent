@@ -1,0 +1,25 @@
+Import('RTT_ROOT')
+Import('rtconfig')
+from building import *
+
+cwd = os.path.join(str(Dir('#')), 'imag')
+
+if GetDepend('RT_USING_LZT_APP'):
+    src = Split("""
+	welcome.c
+	wifi.c
+	zw100.c
+	logo.c
+	id.c
+	fingerbitmap.c
+	button_zw_pay.c
+	button_zw_regedi.c
+	sever_connected.c
+	""")
+
+
+CPPPATH = [cwd, str(Dir('#'))]
+
+group = DefineGroup('img', src, depend = ['RT_USING_LZT_APP'], CPPPATH = CPPPATH)
+
+Return('group')

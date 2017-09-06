@@ -6,7 +6,7 @@
 //#define RT_USING_LIGHT_WAVE_CURER
 
 /* RT_NAME_MAX*/
-#define RT_NAME_MAX	8
+#define RT_NAME_MAX	12
 
 /* RT_ALIGN_SIZE*/
 #define RT_ALIGN_SIZE	4
@@ -29,7 +29,7 @@
 
  
 /*Using adc converter */
-//#define RT_USING_HWADC
+#define RT_USING_HWADC
 //#define RT_USING_HWADC_TEST /*ADC1 channel test*/
 
 /* Using Software Timer */
@@ -114,8 +114,9 @@
 #define RT_CONSOLEBUF_SIZE	        256
 // <string name="RT_CONSOLE_DEVICE_NAME" description="The device name for console" default="uart1" />
 // if you use the console, and you need to configure the 'STM32_CONSOLE_USART' in board.h .
-#define RT_CONSOLE_DEVICE_NAME	    "uart1"
+#define RT_CONSOLE_DEVICE_NAME	            "uart1"
 #define FP_DEVICE_NAME	    				"uart2"
+#define ESP8266_USARTx 		                "uart3"
 
 
 
@@ -163,7 +164,10 @@
 #define RT_USING_FSMC_LCD //fsmc data bus
 #define RT_USING_LCD_ILI9341
 #define RT_USING_IIC_TOUCH_FT5216
+#define RT_USING_RTC
+
 #define RT_USING_STEMWIN
+#define RT_USING_LZT_APP
 
 
 
@@ -197,7 +201,7 @@
 //#define RT_USING_ESP12F /* WIFI mode ESP-12F*/
 
 /* SECTION: lwip, a lighwight TCP/IP protocol stack */
-#define RT_USING_LWIP 
+//#define RT_USING_LWIP 
 /* LwIP uses RT-Thread Memory Management */
 #define RT_LWIP_USING_RT_MEM
 /* Enable ICMP protocol*/

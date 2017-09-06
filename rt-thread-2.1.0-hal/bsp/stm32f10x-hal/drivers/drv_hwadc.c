@@ -374,7 +374,6 @@ const static rt_hwadc_ops_t _drv_hwadc_ops =
     drv_hwadc_start_DMA,
     drv_hwadc_stop_DMA   
 };
-
 int stm32_hwadc_init(void)
 {
     int result;
@@ -383,7 +382,7 @@ int stm32_hwadc_init(void)
        
     hwadc1.adcHandle.Instance = ADC1;    
     
-    result = rt_device_hwadc_register(&rtadc1,"hwadc",&hwadc1);
+    rt_device_hwadc_register(&rtadc1,"hwadc",&hwadc1);
     return result;
 }
 INIT_BOARD_EXPORT(stm32_hwadc_init);
